@@ -1,0 +1,270 @@
+{
+  "summary": [
+    {
+      "stage": "Applied",
+      "applications_reached": 1400,
+      "pct_of_applied": 100.0,
+      "conversion_from_previous_stage_pct": 100.0,
+      "dropped_at_this_step": 0
+    },
+    {
+      "stage": "Screened",
+      "applications_reached": 682,
+      "pct_of_applied": 48.7,
+      "conversion_from_previous_stage_pct": 48.7,
+      "dropped_at_this_step": 718
+    },
+    {
+      "stage": "Interviewed",
+      "applications_reached": 263,
+      "pct_of_applied": 18.8,
+      "conversion_from_previous_stage_pct": 38.6,
+      "dropped_at_this_step": 419
+    },
+    {
+      "stage": "Offered",
+      "applications_reached": 90,
+      "pct_of_applied": 6.4,
+      "conversion_from_previous_stage_pct": 34.2,
+      "dropped_at_this_step": 173
+    },
+    {
+      "stage": "Hired",
+      "applications_reached": 74,
+      "pct_of_applied": 5.3,
+      "conversion_from_previous_stage_pct": 82.2,
+      "dropped_at_this_step": 16
+    }
+  ],
+  "transitions": [
+    {
+      "from_stage": "Applied",
+      "to_stage": "Rejected",
+      "count": 718,
+      "median": 8,
+      "mean": 8.2
+    },
+    {
+      "from_stage": "Applied",
+      "to_stage": "Screened",
+      "count": 682,
+      "median": 9,
+      "mean": 8.5
+    },
+    {
+      "from_stage": "Interviewed",
+      "to_stage": "Offered",
+      "count": 90,
+      "median": 9,
+      "mean": 8.7
+    },
+    {
+      "from_stage": "Interviewed",
+      "to_stage": "Rejected",
+      "count": 173,
+      "median": 9,
+      "mean": 9.0
+    },
+    {
+      "from_stage": "Offered",
+      "to_stage": "Hired",
+      "count": 74,
+      "median": 8,
+      "mean": 8.4
+    },
+    {
+      "from_stage": "Offered",
+      "to_stage": "Offer Declined",
+      "count": 16,
+      "median": 10,
+      "mean": 8.7
+    },
+    {
+      "from_stage": "Screened",
+      "to_stage": "Interviewed",
+      "count": 263,
+      "median": 8,
+      "mean": 8.0
+    },
+    {
+      "from_stage": "Screened",
+      "to_stage": "Rejected",
+      "count": 419,
+      "median": 8,
+      "mean": 8.4
+    }
+  ],
+  "by_dept": [
+    {
+      "dept_id": "D21",
+      "dept_name": "Cutting",
+      "applications": 180,
+      "hired": 12,
+      "rejected": 167,
+      "offer_declined": 1,
+      "hire_rate_pct": 6.7
+    },
+    {
+      "dept_id": "D08",
+      "dept_name": "Spinning",
+      "applications": 162,
+      "hired": 14,
+      "rejected": 144,
+      "offer_declined": 4,
+      "hire_rate_pct": 8.6
+    },
+    {
+      "dept_id": "D23",
+      "dept_name": "Maintenance",
+      "applications": 156,
+      "hired": 6,
+      "rejected": 148,
+      "offer_declined": 2,
+      "hire_rate_pct": 3.8
+    },
+    {
+      "dept_id": "D15",
+      "dept_name": "Finishing",
+      "applications": 143,
+      "hired": 4,
+      "rejected": 136,
+      "offer_declined": 3,
+      "hire_rate_pct": 2.8
+    },
+    {
+      "dept_id": "D14",
+      "dept_name": "Dyeing",
+      "applications": 121,
+      "hired": 6,
+      "rejected": 114,
+      "offer_declined": 1,
+      "hire_rate_pct": 5.0
+    },
+    {
+      "dept_id": "D22",
+      "dept_name": "Packing",
+      "applications": 105,
+      "hired": 8,
+      "rejected": 96,
+      "offer_declined": 1,
+      "hire_rate_pct": 7.6
+    },
+    {
+      "dept_id": "D02",
+      "dept_name": "Finance",
+      "applications": 96,
+      "hired": 6,
+      "rejected": 90,
+      "offer_declined": 0,
+      "hire_rate_pct": 6.2
+    },
+    {
+      "dept_id": "D25",
+      "dept_name": "Warehouse",
+      "applications": 91,
+      "hired": 3,
+      "rejected": 87,
+      "offer_declined": 1,
+      "hire_rate_pct": 3.3
+    },
+    {
+      "dept_id": "D18",
+      "dept_name": "Warehouse",
+      "applications": 89,
+      "hired": 3,
+      "rejected": 84,
+      "offer_declined": 2,
+      "hire_rate_pct": 3.4
+    },
+    {
+      "dept_id": "D05",
+      "dept_name": "Sales & Marketing",
+      "applications": 85,
+      "hired": 4,
+      "rejected": 80,
+      "offer_declined": 1,
+      "hire_rate_pct": 4.7
+    },
+    {
+      "dept_id": "D20",
+      "dept_name": "Stitching",
+      "applications": 50,
+      "hired": 3,
+      "rejected": 47,
+      "offer_declined": 0,
+      "hire_rate_pct": 6.0
+    },
+    {
+      "dept_id": "D11",
+      "dept_name": "Quality Control",
+      "applications": 42,
+      "hired": 2,
+      "rejected": 40,
+      "offer_declined": 0,
+      "hire_rate_pct": 4.8
+    },
+    {
+      "dept_id": "D16",
+      "dept_name": "Maintenance",
+      "applications": 42,
+      "hired": 3,
+      "rejected": 39,
+      "offer_declined": 0,
+      "hire_rate_pct": 7.1
+    },
+    {
+      "dept_id": "D06",
+      "dept_name": "Administration",
+      "applications": 38,
+      "hired": 0,
+      "rejected": 38,
+      "offer_declined": 0,
+      "hire_rate_pct": 0.0
+    }
+  ],
+  "monthly": [
+    {
+      "month": "2026-04",
+      "applied": 256,
+      "hired": 1
+    },
+    {
+      "month": "2026-05",
+      "applied": 269,
+      "hired": 10
+    },
+    {
+      "month": "2026-06",
+      "applied": 257,
+      "hired": 14
+    },
+    {
+      "month": "2026-07",
+      "applied": 276,
+      "hired": 11
+    },
+    {
+      "month": "2026-08",
+      "applied": 283,
+      "hired": 17
+    },
+    {
+      "month": "2026-09",
+      "applied": 59,
+      "hired": 14
+    }
+  ],
+  "total_applications": 1400,
+  "total_hired": 74,
+  "overall_hire_rate_pct": 5.3,
+  "median_days_to_hire": 33,
+  "mean_days_to_hire": 33.5,
+  "biggest_absolute_drop": {
+    "stage": "Screened",
+    "dropped": 718
+  },
+  "biggest_percentage_drop": {
+    "stage": "Offered",
+    "conversion_pct": 34.2
+  }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus Weave Recruitment Funnel</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f4f5f7; color: #1a1a1a; }
+header { background: #12355b; color: white; padding: 28px 32px; }
+header h1 { margin: 0 0 8px 0; font-size: 28px; }
+header p { margin: 0; color: #cdd8e4; }
+main { max-width: 980px; margin: 0 auto; padding: 24px; }
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+.card b { font-size: 28px; display: block; }
+.card span { color: #555; }
+section { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 16px; }
+h2 { margin-top: 0; }
+.row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.label { width: 130px; font-weight: bold; }
+.bar { background: #12355b; color: white; padding: 8px 10px; border-radius: 4px; min-width: 60px; }
+.bar.teal { background: #0f766e; }
+.meta { color: #555; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+input { padding: 8px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+.note { background: #fff7e6; border: 1px solid #f0d9a0; border-radius: 8px; padding: 14px; }
+footer { color: #666; font-size: 13px; padding: 16px 0 32px 0; }
+</style></head><body>
+<header><h1>Indus Weave Recruitment Funnel</h1>
+<p>Applications from April to September 2026. One row per stage change in applications.csv. Final outcomes are Hired, Rejected and Offer Declined. &bull; <a href="../presentation/cfo_dashboard.html" style="color:#60a5fa; font-weight:bold; text-decoration:underline;">← Back to Executive CFO Dashboard</a></p></header>
+<main>
+<div class="cards">
+<div class="card"><b>1400</b><span>Applications</span></div>
+<div class="card"><b>74</b><span>Hired</span></div>
+<div class="card"><b>5.3%</b><span>Overall hire rate</span></div>
+<div class="card"><b>33 days</b><span>Median time to hire</span></div>
+</div>
+
+<section><h2>Funnel</h2><div class='row'><div class='label'>Applied</div><div class='bar' style='width:100%'>1400</div><div class='meta'>100.0% of applied, 100.0% from previous step</div></div><div class='row'><div class='label'>Screened</div><div class='bar' style='width:49%'>682</div><div class='meta'>48.7% of applied, 48.7% from previous step</div></div><div class='row'><div class='label'>Interviewed</div><div class='bar' style='width:19%'>263</div><div class='meta'>18.8% of applied, 38.6% from previous step</div></div><div class='row'><div class='label'>Offered</div><div class='bar' style='width:8%'>90</div><div class='meta'>6.4% of applied, 34.2% from previous step</div></div><div class='row'><div class='label'>Hired</div><div class='bar' style='width:8%'>74</div><div class='meta'>5.3% of applied, 82.2% from previous step</div></div></section>
+
+<section class="note"><h2>What to fix first</h2>
+<p>Biggest absolute drop: Screened step, 718 applications lost. Biggest percentage drop: Offered step, only 34.2% moved forward. Screening and interview capacity are the bottleneck, not the number of applications.</p>
+<p>Median time to hire is 33 days. Every stage takes about 8 to 9 days on median, so no single stage is unusually slow. The loss happens at the decision, not in waiting time.</p></section>
+
+<section><h2>By department</h2>
+<p>Type in the box to filter the table. Hire rate is hired divided by applications in that department.</p>
+<input id="deptFilter" placeholder="Filter by department name or code, for example Cutting or D21">
+<table id="deptTable"><thead><tr><th>Code</th><th>Department</th><th>Applications</th><th>Hired</th><th>Rejected</th><th>Offer declined</th><th>Hire rate</th></tr></thead>
+<tbody><tr><td>D21</td><td>Cutting</td><td>180</td><td>12</td><td>167</td><td>1</td><td>6.7%</td></tr><tr><td>D08</td><td>Spinning</td><td>162</td><td>14</td><td>144</td><td>4</td><td>8.6%</td></tr><tr><td>D23</td><td>Maintenance</td><td>156</td><td>6</td><td>148</td><td>2</td><td>3.8%</td></tr><tr><td>D15</td><td>Finishing</td><td>143</td><td>4</td><td>136</td><td>3</td><td>2.8%</td></tr><tr><td>D14</td><td>Dyeing</td><td>121</td><td>6</td><td>114</td><td>1</td><td>5.0%</td></tr><tr><td>D22</td><td>Packing</td><td>105</td><td>8</td><td>96</td><td>1</td><td>7.6%</td></tr><tr><td>D02</td><td>Finance</td><td>96</td><td>6</td><td>90</td><td>0</td><td>6.2%</td></tr><tr><td>D25</td><td>Warehouse</td><td>91</td><td>3</td><td>87</td><td>1</td><td>3.3%</td></tr><tr><td>D18</td><td>Warehouse</td><td>89</td><td>3</td><td>84</td><td>2</td><td>3.4%</td></tr><tr><td>D05</td><td>Sales & Marketing</td><td>85</td><td>4</td><td>80</td><td>1</td><td>4.7%</td></tr><tr><td>D20</td><td>Stitching</td><td>50</td><td>3</td><td>47</td><td>0</td><td>6.0%</td></tr><tr><td>D11</td><td>Quality Control</td><td>42</td><td>2</td><td>40</td><td>0</td><td>4.8%</td></tr><tr><td>D16</td><td>Maintenance</td><td>42</td><td>3</td><td>39</td><td>0</td><td>7.1%</td></tr><tr><td>D06</td><td>Administration</td><td>38</td><td>0</td><td>38</td><td>0</td><td>0.0%</td></tr></tbody></table></section>
+
+<section><h2>Monthly trend</h2><div class='row'><div class='label'>2026-04</div><div class='bar teal' style='width:90%'>256 applied, 1 hired</div></div><div class='row'><div class='label'>2026-05</div><div class='bar teal' style='width:95%'>269 applied, 10 hired</div></div><div class='row'><div class='label'>2026-06</div><div class='bar teal' style='width:91%'>257 applied, 14 hired</div></div><div class='row'><div class='label'>2026-07</div><div class='bar teal' style='width:98%'>276 applied, 11 hired</div></div><div class='row'><div class='label'>2026-08</div><div class='bar teal' style='width:100%'>283 applied, 17 hired</div></div><div class='row'><div class='label'>2026-09</div><div class='bar teal' style='width:21%'>59 applied, 14 hired</div></div>
+<p>Applied means applications received in that month. Hired means hires completed in that month, not hires from that month's applicants, so the two columns are not a cohort. September applications look low because the file ends in September and many September applications were still in progress. Do not compare September directly with earlier months.</p></section>
+
+<section><h2>Median days between stages</h2>
+<table><thead><tr><th>From</th><th>To</th><th>Cases</th><th>Median</th><th>Mean</th></tr></thead><tbody><tr><td>Applied</td><td>Rejected</td><td>718</td><td>8 days</td><td>8.2 days</td></tr><tr><td>Applied</td><td>Screened</td><td>682</td><td>9 days</td><td>8.5 days</td></tr><tr><td>Interviewed</td><td>Offered</td><td>90</td><td>9 days</td><td>8.7 days</td></tr><tr><td>Interviewed</td><td>Rejected</td><td>173</td><td>9 days</td><td>9.0 days</td></tr><tr><td>Offered</td><td>Hired</td><td>74</td><td>8 days</td><td>8.4 days</td></tr><tr><td>Offered</td><td>Offer Declined</td><td>16</td><td>10 days</td><td>8.7 days</td></tr><tr><td>Screened</td><td>Interviewed</td><td>263</td><td>8 days</td><td>8.0 days</td></tr><tr><td>Screened</td><td>Rejected</td><td>419</td><td>8 days</td><td>8.4 days</td></tr></tbody></table></section>
+
+<footer>Source: data/applications.csv, 3,835 stage rows, 1,400 applications. Built by bonus/build_funnel.py. Re-run that script after any data change.</footer>
+</main>
+<script>
+document.getElementById('deptFilter').addEventListener('input', function(e) {
+  var q = e.target.value.toLowerCase();
+  document.querySelectorAll('#deptTable tbody tr').forEach(function(tr) {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+</script>
+</body></html>

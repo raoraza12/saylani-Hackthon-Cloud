@@ -1,0 +1,9 @@
+from_stage,to_stage,count,median,mean
+Applied,Rejected,718,8,8.2
+Applied,Screened,682,9,8.5
+Interviewed,Offered,90,9,8.7
+Interviewed,Rejected,173,9,9.0
+Offered,Hired,74,8,8.4
+Offered,Offer Declined,16,10,8.7
+Screened,Interviewed,263,8,8.0
+Screened,Rejected,419,8,8.4

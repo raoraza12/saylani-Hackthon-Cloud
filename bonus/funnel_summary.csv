@@ -1,0 +1,6 @@
+stage,applications_reached,pct_of_applied,conversion_from_previous_stage_pct,dropped_at_this_step
+Applied,1400,100.0,100.0,0
+Screened,682,48.7,48.7,718
+Interviewed,263,18.8,38.6,419
+Offered,90,6.4,34.2,173
+Hired,74,5.3,82.2,16

@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indus Weave Textiles — 3D Cyber-Forensic Operations Center</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Three.js & Controls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GSAP for Smooth Motion & Timelines -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- Chart.js for Telemetry -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg-space: #030712;
+      --bg-panel: rgba(11, 19, 38, 0.75);
+      --bg-glass: rgba(15, 23, 42, 0.65);
+      --border-cyber: rgba(99, 102, 241, 0.3);
+      --border-glow: rgba(0, 245, 255, 0.4);
+      --neon-cyan: #00f5ff;
+      --neon-purple: #a855f7;
+      --neon-pink: #ec4899;
+      --neon-crimson: #ff2a5f;
+      --neon-amber: #fbbf24;
+      --neon-emerald: #10b981;
+      --text-glow: #ffffff;
+      --text-muted: #94a3b8;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-space);
+      color: #f8fafc;
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    /* Top Cyber Laser Scroll Progress Indicator (GSAP / Reactive) */
+    #cyber-scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, #00f5ff, #a855f7, #ec4899);
+      box-shadow: 0 0 16px #00f5ff, 0 0 28px rgba(236, 72, 153, 0.7);
+      z-index: 999999;
+      pointer-events: none;
+      transition: width 0.08s ease-out;
+    }
+
+    /* Complete Elimination of Default OS Browser Scrollbars across all browsers */
+    html, body, div, table, * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--neon-cyan) rgba(3, 7, 18, 0.85);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(3, 7, 18, 0.9);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #38bdf8, #ec4899);
+      box-shadow: 0 0 16px rgba(0, 245, 255, 0.8);
+    }
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-button {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    /* Fixed Background WebGL Canvas (The Whole World is 3D) */
+    #webgl-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: auto;
+    }
+
+    /* Foreground Glass HUD Container */
+    .hud-layer {
+      position: relative;
+      z-index: 10;
+      pointer-events: none;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .hud-interactive {
+      pointer-events: auto;
+    }
+
+    /* Top Command Nav Bar */
+    .top-command-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 36px;
+      background: linear-gradient(180deg, rgba(3, 7, 18, 0.95) 0%, rgba(3, 7, 18, 0.4) 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo-hex {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+      animation: logoGlow 4s infinite alternate;
+    }
+    @keyframes logoGlow {
+      from { filter: drop-shadow(0 0 10px rgba(0, 245, 255, 0.4)); }
+      to { filter: drop-shadow(0 0 25px rgba(168, 85, 247, 0.8)); }
+    }
+    .brand-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #ffffff, var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+    }
+
+    .telemetry-badges {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid;
+    }
+    .pill-live {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .pill-live::before {
+      content: "";
+      width: 8px; height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #10b981;
+      animation: beacon 1.5s infinite;
+    }
+    @keyframes beacon {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+    .pill-danger {
+      background: rgba(255, 42, 95, 0.15);
+      border-color: rgba(255, 42, 95, 0.5);
+      color: #ff6b8b;
+      box-shadow: 0 0 15px rgba(255, 42, 95, 0.3);
+    }
+
+    /* Sound and View Controls */
+    .ctrl-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ctrl-btn:hover {
+      background: rgba(0, 245, 255, 0.15);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .ctrl-btn.active {
+      background: var(--neon-cyan);
+      color: #030712;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px var(--neon-cyan);
+    }
+
+    /* 3D Camera Focus Bar */
+    .camera-preset-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(11, 19, 38, 0.6);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-wrap: wrap;
+    }
+    .cam-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      font-family: var(--font-mono);
+    }
+    .cam-btn:hover, .cam-btn.active {
+      color: #fff;
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.25);
+    }
+    .cam-btn .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Main Dashboard Layout */
+    .dashboard-body {
+      max-width: 1460px;
+      margin: 0 auto;
+      padding: 24px 32px 80px 32px;
+      width: 100%;
+    }
+
+    /* KPI Floating Holographic Grid */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .kpi-holo-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .kpi-holo-card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0, 245, 255, 0.25);
+    }
+    .kpi-holo-card::after {
+      content: "";
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.7s ease;
+    }
+    .kpi-holo-card:hover::after {
+      left: 200%;
+    }
+    .card-stripe {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+    }
+    .stripe-danger { background: var(--neon-crimson); box-shadow: 0 0 12px var(--neon-crimson); }
+    .stripe-warning { background: var(--neon-amber); box-shadow: 0 0 12px var(--neon-amber); }
+    .stripe-success { background: var(--neon-emerald); box-shadow: 0 0 12px var(--neon-emerald); }
+    .stripe-cyan { background: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); }
+
+    .kpi-label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kpi-num {
+      font-size: 38px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      letter-spacing: -0.04em;
+      color: #fff;
+      margin-bottom: 6px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+    .kpi-foot {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .glow-red { color: #ff6b8b; font-weight: 700; text-shadow: 0 0 10px rgba(255, 42, 95, 0.4); }
+    .glow-green { color: #34d399; font-weight: 700; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+
+    /* HUD Tab Switcher with Sleek Glass Rail, GSAP Chevrons, and Cyber Scroller Track */
+    .hud-tabs-container {
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .hud-tabs-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hud-tabs-nav {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 6px 4px 6px 4px;
+      scroll-behavior: auto; /* Handled smoothly by GSAP */
+      scrollbar-width: none !important; /* CRITICAL: Hides native thin Windows scrollbar in Firefox and Chrome 121+ */
+      -ms-overflow-style: none !important; /* IE & Edge */
+      flex: 1;
+      cursor: grab;
+      user-select: none;
+    }
+    .hud-tabs-nav:active {
+      cursor: grabbing;
+    }
+    .hud-tabs-nav::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
+    .tab-nav-arrow {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(0, 245, 255, 0.25);
+      color: var(--neon-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+      backdrop-filter: blur(20px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5), inset 0 0 10px rgba(0, 245, 255, 0.08);
+    }
+    .tab-nav-arrow:hover {
+      background: rgba(0, 245, 255, 0.18);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.5), inset 0 0 15px rgba(0, 245, 255, 0.2);
+      transform: scale(1.08);
+      color: #fff;
+    }
+    .tab-nav-arrow:active {
+      transform: scale(0.92);
+    }
+    .tab-nav-arrow span {
+      display: inline-block;
+      transform: translateY(-2px);
+    }
+
+    /* Cyber Scroller Track & Indicator Thumb below tabs */
+    .cyber-scroller-rail {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      margin-top: 10px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+      transition: height 0.2s, background 0.2s;
+    }
+    .cyber-scroller-rail:hover {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .cyber-scroller-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 25%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+      box-shadow: 0 0 14px rgba(0, 245, 255, 0.8), 0 0 4px #fff;
+      pointer-events: none;
+      transition: width 0.15s ease-out;
+    }
+    .hud-tab-btn {
+      padding: 14px 26px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(16px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    .hud-tab-btn:hover {
+      color: #fff;
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+    .hud-tab-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(168, 85, 247, 0.25) 100%);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 25px rgba(0, 245, 255, 0.35), inset 0 0 15px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Tab Panels */
+    .tab-panel {
+      display: none;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Cyber Glass Section Panels */
+    .cyber-panel {
+      background: var(--bg-panel);
+      backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      position: relative;
+    }
+    .cyber-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 18px;
+    }
+    .cyber-panel-header h2 {
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(90deg, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cyber-panel-header p {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      margin-top: 4px;
+    }
+
+    /* Finding Incident Boxes */
+    .incident-box {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 5px solid var(--accent-primary);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.25s ease;
+    }
+    .incident-box:hover {
+      transform: translateX(6px);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .incident-box.critical {
+      border-left-color: var(--neon-crimson);
+      background: rgba(255, 42, 95, 0.04);
+    }
+    .incident-box h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+    }
+    .incident-box p {
+      color: #cbd5e1;
+      font-size: 15px;
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .incident-meta {
+      display: flex;
+      gap: 18px;
+      font-size: 12px;
+      color: var(--neon-cyan);
+      font-family: var(--font-mono);
+      flex-wrap: wrap;
+    }
+    .action-badge {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px dashed rgba(99, 102, 241, 0.4);
+      padding: 14px 20px;
+      border-radius: 10px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #c7d2fe;
+      line-height: 1.6;
+    }
+
+    /* Live Data Tables */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+    th {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--neon-cyan);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    td {
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+    }
+    tr:hover td {
+      background: rgba(0, 245, 255, 0.04);
+    }
+    .num { font-family: var(--font-mono); }
+    .badge-pill-table {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      display: inline-block;
+    }
+    .badge-danger-fill { background: rgba(255, 42, 95, 0.2); color: #ff6b8b; border: 1px solid rgba(255, 42, 95, 0.5); }
+    .badge-warning-fill { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.5); }
+
+    /* Interactive Search */
+    .cyber-search {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: #fff;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      outline: none;
+      margin-bottom: 18px;
+      transition: all 0.2s;
+    }
+    .cyber-search:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    /* 3D Slide Presenter Stage */
+    .pitch-stage-3d {
+      background: radial-gradient(circle at 50% 20%, rgba(30, 41, 59, 0.9) 0%, rgba(10, 15, 28, 0.98) 100%);
+      border: 1px solid rgba(0, 245, 255, 0.3);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(0, 245, 255, 0.15);
+      border-radius: 24px;
+      padding: 48px;
+      min-height: 540px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .pitch-header-badge {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .pitch-title {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .pitch-body {
+      font-size: 18px;
+      line-height: 1.85;
+      color: #cbd5e1;
+      margin-bottom: 30px;
+    }
+    .pitch-body li {
+      margin-bottom: 14px;
+      list-style-type: none;
+      position: relative;
+      padding-left: 28px;
+    }
+    .pitch-body li::before {
+      content: "✦";
+      position: absolute;
+      left: 0;
+      color: var(--neon-cyan);
+      font-size: 16px;
+    }
+    .pitch-speaker-prompter {
+      background: rgba(236, 72, 153, 0.08);
+      border-left: 4px solid var(--neon-pink);
+      padding: 16px 22px;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #f472b6;
+      line-height: 1.6;
+    }
+    .pitch-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 24px;
+    }
+
+    /* Modal */
+    .cyber-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .cyber-modal-overlay.open { display: flex; }
+    .cyber-modal-window {
+      background: #0b1326;
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 50px rgba(0, 245, 255, 0.4);
+      border-radius: 20px;
+      max-width: 680px;
+      width: 100%;
+      padding: 36px;
+      position: relative;
+    }
+    .modal-x {
+      position: absolute;
+      top: 22px; right: 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 26px;
+      cursor: pointer;
+    }
+    .modal-x:hover { color: #fff; }
+
+    /* Sound Notification Toast */
+    .sound-toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .sound-toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ==================== CINEMATIC 3D PITCH THEATER ==================== */
+    .pitch-theater-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle at center, rgba(3, 7, 18, 0.65) 0%, rgba(3, 7, 18, 0.94) 100%);
+      backdrop-filter: blur(16px);
+      z-index: 9999;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 44px;
+      user-select: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .pitch-theater-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    .pitch-theater-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .pitch-timer-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--neon-cyan);
+      padding: 6px 14px;
+      border-radius: 12px;
+      box-shadow: 0 0 16px rgba(0, 245, 255, 0.25);
+    }
+    .pitch-timer-display {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+    .pitch-timer-display.alert {
+      color: var(--neon-crimson);
+      text-shadow: 0 0 14px var(--neon-crimson);
+      animation: timerAlert 0.8s infinite alternate;
+    }
+    @keyframes timerAlert {
+      from { transform: scale(1); opacity: 0.8; }
+      to { transform: scale(1.08); opacity: 1; }
+    }
+    .pitch-theater-stage-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+    .pitch-theater-body {
+      max-width: 1020px;
+      width: 100%;
+      background: rgba(11, 19, 38, 0.88);
+      border: 1px solid rgba(0, 245, 255, 0.45);
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 50px rgba(0, 245, 255, 0.22);
+      backdrop-filter: blur(28px);
+      padding: 40px 50px;
+      position: relative;
+    }
+    .pitch-theater-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .pitch-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .pitch-dot.active {
+      width: 32px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      box-shadow: 0 0 14px var(--neon-cyan);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .top-command-bar { padding: 14px 20px; }
+      .dashboard-body { padding: 16px; }
+      .pitch-title { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Cyber Laser Reading Progress Bar -->
+  <div id="cyber-scroll-progress"></div>
+
+  <!-- Fullscreen Three.js WebGL Scene -->
+  <canvas id="webgl-bg"></canvas>
+
+  <!-- Foreground Glass HUD Layer -->
+  <div class="hud-layer">
+
+    <!-- Top Command Header -->
+    <div class="top-command-bar hud-interactive">
+      <div class="brand-group">
+        <div class="brand-logo-hex">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">INDUS WEAVE • 3D FORENSIC OPS</div>
+          <div class="brand-sub">PEOPLEOPS DATA PIPELINE & PAYROLL RECONCILIATION</div>
+        </div>
+      </div>
+
+      <div class="telemetry-badges">
+        <span class="pill-badge pill-live">22/22 DQ CHECKS PASSED</span>
+        <span class="pill-badge pill-danger">PKR 1.98M LEAKAGE DETECTED</span>
+      </div>
+    </div>
+
+    <!-- 3D Camera Focus Controls (Swoop into any Plant) -->
+    <div class="camera-preset-bar hud-interactive">
+      <span style="font-family: var(--font-mono); font-size: 12px; color: var(--neon-cyan); margin-right: 8px; display: flex; align-items: center;">
+        🛰️ 3D CAMERA ORBIT:
+      </span>
+      <button class="cam-btn active" id="cam-overview" onclick="moveCamera('overview')">
+        <span class="dot" style="background:#6366f1;"></span> Macro Orbit
+      </button>
+      <button class="cam-btn" id="cam-faisalabad" onclick="moveCamera('faisalabad')">
+        <span class="dot" style="background:#ff2a5f; box-shadow: 0 0 8px #ff2a5f;"></span> Faisalabad Plant (Alert)
+      </button>
+      <button class="cam-btn" id="cam-site" onclick="moveCamera('site')">
+        <span class="dot" style="background:#fbbf24; box-shadow: 0 0 8px #fbbf24;"></span> SITE Plant (Clock Drift)
+      </button>
+      <button class="cam-btn" id="cam-korangi" onclick="moveCamera('korangi')">
+        <span class="dot" style="background:#00f5ff;"></span> Korangi Plant
+      </button>
+      <button class="cam-btn" id="cam-ho" onclick="moveCamera('ho')">
+        <span class="dot" style="background:#10b981;"></span> Head Office
+      </button>
+    </div>
+
+    <!-- Main Dashboard Body -->
+    <div class="dashboard-body hud-interactive">
+
+      <!-- 3D Floating KPI Tiles -->
+      <div class="kpi-row">
+        <div class="kpi-holo-card" onmousemove="tiltPhysics(event, this)" onmouseleave="resetPhysics(this)" onclick="showTab('tab-ot')">
+          <div class="card-stripe stripe-danger"></div>
+          <div class="kpi-label">
+            <span>UNWORKED OVERTIME PAID</span>
+            <span style="color:#ff6b8b;">⚠️ 25% SPREAD</span>
+          </div>
+          <div class="kpi-num" id="val-ot">7,286 hrs</div>
+          <div class="kpi-foot glow-red">Paid: 36,402 hrs vs Punches: 29,116 hrs</div>
+        </div>
+
+        <div class="kpi-holo-card" onmousemove="tiltPhysics(event, this)" onmouseleave="resetPhysics(this)" onclick="showTab('tab-ghost')">
+          <div class="card-stripe stripe-danger"></div>
+          <div class="kpi-label">
+            <span>GHOST EMPLOYEE LEAKAGE</span>
+            <span style="color:#ff6b8b;">🛑 21 PAYROLL MONTHS</span>
+          </div>
+          <div class="kpi-num" id="val-ghost">PKR 1.98M</div>
+          <div class="kpi-foot glow-red">5 Resigned staff paid up to 5 mo post-exit</div>
+        </div>
+
+        <div class="kpi-holo-card" onmousemove="tiltPhysics(event, this)" onmouseleave="resetPhysics(this)" onclick="showTab('tab-workforce')">
+          <div class="card-stripe stripe-warning"></div>
+          <div class="kpi-label">
+            <span>OVERTIME BILL SURGE</span>
+            <span style="color:#fbbf24;">📈 HEADCOUNT -2%</span>
+          </div>
+          <div class="kpi-num" id="val-bill">+23.5% Spike</div>
+          <div class="kpi-foot">PKR 2.81M (Apr) → PKR 3.48M (Sep)</div>
+        </div>
+
+        <div class="kpi-holo-card" onmousemove="tiltPhysics(event, this)" onmouseleave="resetPhysics(this)" onclick="showTab('tab-arch')">
+          <div class="card-stripe stripe-success"></div>
+          <div class="kpi-label">
+            <span>KIMBALL STAR SCHEMA DQ</span>
+            <span style="color:#34d399;">✅ ZERO LOSS</span>
+          </div>
+          <div class="kpi-num" id="val-dq">22 / 22 PASS</div>
+          <div class="kpi-foot glow-green">472,907 Raw = Staged + Rejected</div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs with GSAP High-Tech Scroller Bar & Chevrons -->
+      <div class="hud-tabs-container">
+        <div class="hud-tabs-wrapper">
+          <button class="tab-nav-arrow arrow-left" id="btnScrollLeft" onclick="scrollHudTabs(-300)" title="Scroll Left (GSAP)">
+            <span>‹</span>
+          </button>
+          
+          <div class="hud-tabs-nav" id="hudTabsNav">
+            <button class="hud-tab-btn active" id="btn-cfo" onclick="showTab('tab-cfo')">💼 1. CFO Critical Briefing</button>
+            <button class="hud-tab-btn" id="btn-ot" onclick="showTab('tab-ot')">⏱️ 2. Overtime Forensics & Charts (Q5, Q6)</button>
+            <button class="hud-tab-btn" id="btn-ghost" onclick="showTab('tab-ghost')">👻 3. Ghost Employees Chamber (Q7, Q8)</button>
+            <button class="hud-tab-btn" id="btn-workforce" onclick="showTab('tab-workforce')">📊 4. Workforce Dynamics (Q1-Q4, Q10)</button>
+            <button class="hud-tab-btn" id="btn-arch" onclick="showTab('tab-arch')">🏗️ 5. Kimball Architecture & DQ</button>
+          </div>
+
+          <button class="tab-nav-arrow arrow-right" id="btnScrollRight" onclick="scrollHudTabs(300)" title="Scroll Right (GSAP)">
+            <span>›</span>
+          </button>
+        </div>
+
+        <!-- Sleek GSAP Cyber Neon Track & Scroller Indicator -->
+        <div class="cyber-scroller-rail" id="tabsScrollRail" onclick="handleRailClick(event)" title="Click to Jump Scroller">
+          <div class="cyber-scroller-thumb" id="tabsScrollThumb"></div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 1: CFO CRITICAL BRIEFING ==================== -->
+      <div id="tab-cfo" class="tab-panel active">
+        <div class="cyber-panel">
+          <div class="cyber-panel-header">
+            <div>
+              <h2>Executive Incident Briefing for CFO</h2>
+              <p>Forensic proof that rising overtime is driven by manager approval loopholes, not factory production</p>
+            </div>
+            <span class="badge-pill-table badge-danger-fill">HIGH RISK CLUSTER</span>
+          </div>
+
+          <div class="incident-box critical">
+            <h3>
+              <span>Finding #1: Paid Overtime is NOT Worked Overtime (Divergence Widening)</span>
+              <span class="badge-pill-table badge-danger-fill">7,286 PHANTOM HOURS</span>
+            </h3>
+            <p>
+              Over April–September 2026, biometric punch calculations recorded <b>29,116 hours</b> of genuine overtime, but payroll disbursed <b>36,402 hours</b> — a direct discrepancy of <b>7,286 unworked hours</b>. 
+              The monthly gap expanded from 856 hours in April to <b>1,748 hours in September (+104% growth)</b>. 
+              While actual worked overtime remained flat (~4,800 hrs/mo), the overtime payroll bill escalated from PKR 2.81M to PKR 3.48M (+23.5%). 
+              <b>Faisalabad Plant</b> accounts for the highest variance: 14,418 paid hours against only 9,895 actual worked hours.
+            </p>
+            <div class="incident-meta">
+              <span>SQL EVIDENCE: analytics/q05_overtime_compare.sql</span>
+              <span>THRESHOLD: 74 Department-Months exceed computed overtime by >15%</span>
+            </div>
+            <div class="action-badge">
+              <b>Mandatory CFO Action:</b> Program biometric validation directly into payroll disbursement: Overtime must strictly match turnstile punch differentials. Block manual supervisor overrides.
+            </div>
+          </div>
+
+          <div class="incident-box critical">
+            <h3>
+              <span>Finding #2: 3,518 Overtime Requests Approved on Days with ZERO Overtime Worked</span>
+              <span class="badge-pill-table badge-danger-fill">17.9% APPROVAL FAILURE</span>
+            </h3>
+            <p>
+              Out of 19,666 approved overtime slips, <b>3,518 (17.9%) had exactly zero computed overtime on that date</b>! 
+              This includes 584 Present days where the employee clocked out on or before normal shift end, and 2,934 requests occurred on <b>Absent, Leave, Holiday, Weekly Off, or Missing Punch days</b>. 
+              Supervisors are approving paper requests without verifying physical presence.
+            </p>
+            <div class="incident-meta">
+              <span>SQL EVIDENCE: analytics/q06_paid_exceeds_computed.sql & fact_attendance_daily join</span>
+            </div>
+            <div class="action-badge">
+              <b>Mandatory CFO Action:</b> Lock manager approval portal if computed overtime for that employee and work_date is zero. Audit all 3,518 claims for retroactive clawback.
+            </div>
+          </div>
+
+          <div class="incident-box critical">
+            <h3>
+              <span>Finding #3: Ghost Employees: PKR 1,983,188 Disbursed Months After Separation</span>
+              <span class="badge-pill-table badge-danger-fill">21 FRAUDULENT MONTHS</span>
+            </h3>
+            <p>
+              Five separated employees continued receiving automatic monthly bank disbursements long after their official resignation dates. 
+              The prime offender, <b>Umair Baloch (E10471)</b>, resigned on 23 April 2026 but received full monthly compensation from May through September (PKR 682,100 total) while recording <b>0 days attendance</b>.
+            </p>
+            <div class="incident-meta">
+              <span>SQL EVIDENCE: analytics/q08_paid_after_separation.sql & q07_paid_zero_attendance.sql</span>
+            </div>
+            <div class="action-badge">
+              <b>Mandatory CFO Action:</b> Wire HR separation workflows to auto-freeze payroll API tokens upon entry of `separation_date`. Freeze linked accounts and issue clawback notices.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 2: OVERTIME FORENSICS ==================== -->
+      <div id="tab-ot" class="tab-panel">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+          <div class="cyber-panel">
+            <div class="cyber-panel-header">
+              <div>
+                <h2>Biometric Worked vs Paid Overtime Trend</h2>
+                <p>Biometric worked hours remain flat; paid hours surge continuously</p>
+              </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="otTrendChart"></canvas>
+            </div>
+          </div>
+
+          <div class="cyber-panel">
+            <div class="cyber-panel-header">
+              <div>
+                <h2>Plant-wise Overtime Discrepancy Breakdown</h2>
+                <p>Faisalabad Plant represents over 62% of all unworked overtime</p>
+              </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="plantOtChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="cyber-panel">
+          <div class="cyber-panel-header">
+            <div>
+              <h2>Overtime Abuse Hotspots (>15% Discrepancy)</h2>
+              <p>From Q06: Search by Department or Plant to pinpoint abuse</p>
+            </div>
+          </div>
+
+          <input type="text" id="otSearchInput" class="cyber-search" placeholder="🔍 Search by Plant (e.g. Faisalabad) or Dept (e.g. Stitching)..." onkeyup="filterCyberTable('otSearchInput', 'otTable')">
+
+          <div class="table-responsive">
+            <table id="otTable">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Plant</th>
+                  <th>Dept ID</th>
+                  <th>Department</th>
+                  <th>Biometric Worked (hrs)</th>
+                  <th>Paid (hrs)</th>
+                  <th>Excess (hrs)</th>
+                  <th>Inflation %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2026-09</td>
+                  <td><b style="color:#ff6b8b;">Faisalabad Plant</b></td>
+                  <td>D20</td>
+                  <td><b>Stitching</b></td>
+                  <td class="num">579.5</td>
+                  <td class="num">1,778.5</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">+1,199.0</td>
+                  <td><span class="badge-pill-table badge-danger-fill">+206.9%</span></td>
+                </tr>
+                <tr>
+                  <td>2026-08</td>
+                  <td><b style="color:#ff6b8b;">Faisalabad Plant</b></td>
+                  <td>D20</td>
+                  <td><b>Stitching</b></td>
+                  <td class="num">729.0</td>
+                  <td class="num">1,548.5</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">+819.5</td>
+                  <td><span class="badge-pill-table badge-danger-fill">+112.4%</span></td>
+                </tr>
+                <tr>
+                  <td>2026-07</td>
+                  <td><b style="color:#ff6b8b;">Faisalabad Plant</b></td>
+                  <td>D20</td>
+                  <td><b>Stitching</b></td>
+                  <td class="num">653.5</td>
+                  <td class="num">1,440.5</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">+787.0</td>
+                  <td><span class="badge-pill-table badge-danger-fill">+120.4%</span></td>
+                </tr>
+                <tr>
+                  <td>2026-06</td>
+                  <td><b style="color:#ff6b8b;">Faisalabad Plant</b></td>
+                  <td>D20</td>
+                  <td><b>Stitching</b></td>
+                  <td class="num">588.0</td>
+                  <td class="num">1,122.0</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">+534.0</td>
+                  <td><span class="badge-pill-table badge-danger-fill">+90.8%</span></td>
+                </tr>
+                <tr>
+                  <td>2026-05</td>
+                  <td><b style="color:#ff6b8b;">Faisalabad Plant</b></td>
+                  <td>D20</td>
+                  <td><b>Stitching</b></td>
+                  <td class="num">723.5</td>
+                  <td class="num">1,008.0</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">+284.5</td>
+                  <td><span class="badge-pill-table badge-warning-fill">+39.3%</span></td>
+                </tr>
+                <tr>
+                  <td>2026-09</td>
+                  <td>Korangi Plant</td>
+                  <td>D09</td>
+                  <td>Weaving</td>
+                  <td class="num">535.5</td>
+                  <td class="num">627.0</td>
+                  <td class="num">+91.5</td>
+                  <td><span class="badge-pill-table badge-warning-fill">+17.1%</span></td>
+                </tr>
+                <tr>
+                  <td>2026-09</td>
+                  <td>SITE Plant</td>
+                  <td>D15</td>
+                  <td>Finishing</td>
+                  <td class="num">424.0</td>
+                  <td class="num">500.0</td>
+                  <td class="num">+76.0</td>
+                  <td><span class="badge-pill-table badge-warning-fill">+17.9%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 3: GHOST EMPLOYEES ==================== -->
+      <div id="tab-ghost" class="tab-panel">
+        <div class="cyber-panel">
+          <div class="cyber-panel-header">
+            <div>
+              <h2>Separated Staff Receiving Payroll (PKR 1,983,188 Total Loss)</h2>
+              <p>Click on any employee row to open interactive 3D forensic case file</p>
+            </div>
+            <span class="badge-pill-table badge-danger-fill">5 RECOVERY TARGETS</span>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Emp ID</th>
+                  <th>Full Name</th>
+                  <th>Separation Date</th>
+                  <th>Months Paid Post-Exit</th>
+                  <th>Total Financial Leakage</th>
+                  <th>Present Attendance</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="cursor: pointer;" onclick="openAuditModal('E10471', 'Umair Baloch', '2026-04-23', 'May, Jun, Jul, Aug, Sep (5 months)', 'PKR 682,100', '0 Days', 'D14 - Dyeing', 'PKR 136,420 / month')">
+                  <td><b class="num" style="color:var(--neon-cyan);">E10471</b></td>
+                  <td><b>Umair Baloch</b></td>
+                  <td class="num">2026-04-23</td>
+                  <td>May – Sep 2026 (5 mo)</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">PKR 682,100</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">0 Days (Q07 Flag)</td>
+                  <td><button class="ctrl-btn" style="padding:4px 10px; font-size:11px;">🔍 Case File</button></td>
+                </tr>
+                <tr style="cursor: pointer;" onclick="openAuditModal('E11222', 'Naveed Ansari', '2026-05-16', 'Jun, Jul, Aug, Sep (4 months)', 'PKR 423,692', '0 Days', 'D08 - Spinning', 'PKR 105,923 / month')">
+                  <td><b class="num" style="color:var(--neon-cyan);">E11222</b></td>
+                  <td><b>Naveed Ansari</b></td>
+                  <td class="num">2026-05-16</td>
+                  <td>Jun – Sep 2026 (4 mo)</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">PKR 423,692</td>
+                  <td class="num">0 Days</td>
+                  <td><button class="ctrl-btn" style="padding:4px 10px; font-size:11px;">🔍 Case File</button></td>
+                </tr>
+                <tr style="cursor: pointer;" onclick="openAuditModal('E10332', 'Amna Awan', '2026-05-14', 'Jun, Jul, Aug, Sep (4 months)', 'PKR 324,820', '0 Days', 'D20 - Stitching', 'PKR 81,205 / month')">
+                  <td><b class="num" style="color:var(--neon-cyan);">E10332</b></td>
+                  <td><b>Amna Awan</b></td>
+                  <td class="num">2026-05-14</td>
+                  <td>Jun – Sep 2026 (4 mo)</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">PKR 324,820</td>
+                  <td class="num">0 Days</td>
+                  <td><button class="ctrl-btn" style="padding:4px 10px; font-size:11px;">🔍 Case File</button></td>
+                </tr>
+                <tr style="cursor: pointer;" onclick="openAuditModal('E10989', 'Tariq Jatoi', '2026-05-18', 'Jun, Jul, Aug, Sep (4 months)', 'PKR 296,640', '0 Days', 'D10 - Maintenance', 'PKR 74,160 / month')">
+                  <td><b class="num" style="color:var(--neon-cyan);">E10989</b></td>
+                  <td><b>Tariq Jatoi</b></td>
+                  <td class="num">2026-05-18</td>
+                  <td>Jun – Sep 2026 (4 mo)</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">PKR 296,640</td>
+                  <td class="num">0 Days</td>
+                  <td><button class="ctrl-btn" style="padding:4px 10px; font-size:11px;">🔍 Case File</button></td>
+                </tr>
+                <tr style="cursor: pointer;" onclick="openAuditModal('E10295', 'Sohail Hussain', '2026-05-11', 'Jun, Jul, Aug, Sep (4 months)', 'PKR 255,936', '0 Days', 'D21 - Cutting', 'PKR 63,984 / month')">
+                  <td><b class="num" style="color:var(--neon-cyan);">E10295</b></td>
+                  <td><b>Sohail Hussain</b></td>
+                  <td class="num">2026-05-11</td>
+                  <td>Jun – Sep 2026 (4 mo)</td>
+                  <td class="num" style="color:#ff6b8b; font-weight:800;">PKR 255,936</td>
+                  <td class="num">0 Days</td>
+                  <td><button class="ctrl-btn" style="padding:4px 10px; font-size:11px;">🔍 Case File</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 4: WORKFORCE METRICS ==================== -->
+      <div id="tab-workforce" class="tab-panel">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+          <div class="cyber-panel">
+            <div class="cyber-panel-header">
+              <div>
+                <h2>Headcount Trend (Q01)</h2>
+                <p>Workforce net contraction over 6 months (-23 staff)</p>
+              </div>
+            </div>
+            <div style="height: 260px; position: relative;">
+              <canvas id="headcountChart"></canvas>
+            </div>
+          </div>
+
+          <div class="cyber-panel">
+            <div class="cyber-panel-header">
+              <div>
+                <h2>Leave Overuse Alert (Q10)</h2>
+                <p>20 Employees consumed full year's leave in 6 months</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Emp ID</th>
+                    <th>Employee</th>
+                    <th>Taken</th>
+                    <th>Annual Cap</th>
+                    <th>Excess</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>E10770</td>
+                    <td>Danish Iqbal</td>
+                    <td class="num">28 days</td>
+                    <td class="num">14</td>
+                    <td class="num" style="color:#ff6b8b; font-weight:bold;">+14 days</td>
+                  </tr>
+                  <tr>
+                    <td>E10826</td>
+                    <td>Ahmed Mirza</td>
+                    <td class="num">27 days</td>
+                    <td class="num">14</td>
+                    <td class="num" style="color:#ff6b8b; font-weight:bold;">+13 days</td>
+                  </tr>
+                  <tr>
+                    <td>E10748</td>
+                    <td>Asif Ansari</td>
+                    <td class="num">25 days</td>
+                    <td class="num">14</td>
+                    <td class="num" style="color:#ff6b8b; font-weight:bold;">+11 days</td>
+                  </tr>
+                  <tr>
+                    <td>E10025</td>
+                    <td>Arif Gill</td>
+                    <td class="num">24 days</td>
+                    <td class="num">14</td>
+                    <td class="num" style="color:#ff6b8b; font-weight:bold;">+10 days</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="cyber-panel">
+          <div class="cyber-panel-header">
+            <div>
+              <h2>Biometric Hardware Forensic Discovery: DEV-SITE-01 Clock Drift</h2>
+              <p>Stage 2 Data Profiling: 60-Minute Fast Clock Jump Detected</p>
+            </div>
+            <span class="badge-pill-table badge-warning-fill">ALGORITHMICALLY CORRECTED</span>
+          </div>
+          <p style="font-size: 15px; color: #cbd5e1; line-height: 1.8; margin-bottom: 16px;">
+            During biometric staging analysis, punches from device <b>DEV-SITE-01</b> exhibited an artificial 60-minute time jump starting exactly on <b>2026-07-01</b>. 
+            Prior to July, all biometric readers recorded median arrival at <b>-7 minutes</b> relative to shift start. 
+            Starting July 1st, DEV-SITE-01 suddenly logged arrivals at <b>+53 minutes</b>, which would have falsely penalized hundreds of employees as late and distorted overtime.
+          </p>
+          <div class="action-badge">
+            <b>Our Pipeline Solution:</b> We subtracted 60 minutes from DEV-SITE-01 logs on or after 2026-07-01 prior to shift assignment, restoring 100% data fidelity.
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 5: ARCHITECTURE & DQ ==================== -->
+      <div id="tab-arch" class="tab-panel">
+        <div class="cyber-panel">
+          <div class="cyber-panel-header">
+            <div>
+              <h2>Production Kimball Star Schema Architecture</h2>
+              <p>PostgreSQL / SQLite portable data warehouse with Slowly Changing Dimensions</p>
+            </div>
+            <span class="badge-pill-table badge-danger-fill" style="background:rgba(16,185,129,0.2); color:#34d399; border-color:rgba(16,185,129,0.5);">22/22 DQ PASS</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div>
+              <h3 style="font-size: 16px; margin-bottom: 14px; color: var(--neon-cyan);">Dimensions & Fact Tables</h3>
+              <ul style="list-style: none; font-size: 14px; line-height: 2.2;">
+                <li>🔹 <b>dim_employee</b>: Slowly Changing Dimension Type-2 (tracking promotions, transfers, salaries over time)</li>
+                <li>🔹 <b>dim_department</b>: Plant, cost centers, and historical dept name normalization</li>
+                <li>🔹 <b>dim_shift</b>: Shift scheduling, midnight boundary rules, and grace periods</li>
+                <li>🔹 <b>dim_date</b>: Working days, holidays, Sunday rules</li>
+                <li>🔸 <b>fact_attendance_daily</b>: Grain of (emp_id, work_date), punch differentials, late/early flags</li>
+                <li>🔸 <b>fact_overtime_approved</b>: Approved OT requests by manager</li>
+                <li>🔸 <b>fact_payroll_line</b>: Complete earnings, deductions, and tax lines</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 style="font-size: 16px; margin-bottom: 14px; color: #10b981;">Automated Data Quality Checks (Stage 6)</h3>
+              <ul style="list-style: none; font-size: 14px; line-height: 2.2;">
+                <li>✅ <b>Reconciliation:</b> Raw (472,907) = Staged + Rejected (Zero data loss)</li>
+                <li>✅ <b>PK / Composite Key Integrity:</b> 0 duplicate keys across all fact & dim tables</li>
+                <li>✅ <b>Referential Integrity:</b> 0 orphaned fact records</li>
+                <li>✅ <b>SCD Integrity:</b> 0 overlapping validity ranges for employees</li>
+                <li>✅ <b>Discrete OT Intervals:</b> All computed overtime rounded to half-hour steps</li>
+                <li>✅ <b>Reasonability Checks:</b> No negative worked hours; 0 shifts &gt; 16 hrs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 60px;">
+      Indus Weave Textiles • PeopleOps AI Hackathon Project • Production Kimball Data Warehouse & 3D Analytics Deck
+    </footer>
+  </div>
+
+  <!-- Interactive Forensic Modal -->
+  <div id="auditModal" class="cyber-modal-overlay">
+    <div class="cyber-modal-window" id="modalBox">
+      <button class="modal-x" onclick="closeAuditModal()">&times;</button>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <span class="badge-pill-table badge-danger-fill">FRAUD INVESTIGATION FILE</span>
+        <span class="num" id="modalEmpId" style="color:var(--neon-cyan); font-weight:bold;">E10471</span>
+      </div>
+      <h2 id="modalName" style="font-size:26px; font-weight:800; margin-bottom:6px; color:#fff;">Umair Baloch</h2>
+      <p id="modalDept" style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">D14 - Dyeing</p>
+
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:20px; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14px;">
+          <div><b>Separation Date:</b> <span id="modalSepDate" class="num" style="color:#ff6b8b;">2026-04-23</span></div>
+          <div><b>Monthly Salary:</b> <span id="modalMonthlyRate" class="num">PKR 136,420</span></div>
+          <div><b>Post-Exit Payouts:</b> <span id="modalMonths">5 months</span></div>
+          <div><b>Present Days in Period:</b> <span id="modalAttendance" style="color:#ff6b8b; font-weight:bold;">0 Days</span></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <b style="font-size:13px; color:var(--text-muted); text-transform:uppercase; font-family:var(--font-mono);">Total Financial Leakage:</b>
+        <div id="modalTotalLoss" style="font-size:36px; font-weight:900; color:#ff6b8b; font-family:var(--font-mono);">PKR 682,100</div>
+      </div>
+
+      <div class="action-badge" style="margin-top:0;">
+        <b>Clawback Action:</b> Issue legal notice for immediate recovery of PKR 682,100, freeze linked bank routing numbers, and terminate stale employee records.
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    // Audio disabled
+    function playTone() {}
+    function playChord() {}
+    function playAlertChime() {}
+
+
+    function showToast(msg) {
+      const toast = document.getElementById('soundToast');
+      if (!toast) return;
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    // ==========================================
+    // 2. THREE.JS 3D SCENE & PLANT DIGITAL TWIN
+    // ==========================================
+    let scene, camera, renderer, globeCore, plantMeshes = [], beamGroup, dataPackets = [];
+    let isMouseDown = false, mousePos = { x: 0, y: 0 };
+    const canvas = document.getElementById('webgl-bg');
+
+    const CAM_POSITIONS = {
+      overview: { x: 0, y: 70, z: 180, target: { x: 0, y: 10, z: 0 } },
+      faisalabad: { x: 70, y: 25, z: 20, target: { x: 55, y: 10, z: -15 } },
+      site: { x: -65, y: 18, z: 45, target: { x: -50, y: 5, z: 20 } },
+      korangi: { x: -25, y: 35, z: -10, target: { x: -20, y: 15, z: -40 } },
+      ho: { x: 15, y: -5, z: 75, target: { x: 12, y: -15, z: 40 } }
+    };
+
+    function initThreeScene() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x030712, 0.0035);
+
+      camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 2000);
+      camera.position.set(0, 70, 180);
+      camera.lookAt(0, 10, 0);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lighting
+      const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambient);
+
+      const purpleLight = new THREE.PointLight(0xa855f7, 3, 400);
+      purpleLight.position.set(0, 100, 100);
+      scene.add(purpleLight);
+
+      const cyanLight = new THREE.PointLight(0x00f5ff, 4, 300);
+      cyanLight.position.set(-100, 50, -50);
+      scene.add(cyanLight);
+
+      // Glowing Ground Grid
+      const grid = new THREE.GridHelper(300, 60, 0x6366f1, 0x1e293b);
+      grid.position.y = -25;
+      grid.material.opacity = 0.25;
+      grid.material.transparent = true;
+      scene.add(grid);
+
+      // Domain Equipment Animation References
+      let cfoFlaps = [], cfoShuttle = null, cfoHarnessA = null, cfoHarnessB = null, cfoSpools = [], cfoKimballCubes = [];
+
+      // 1. SITE PLANT: 3D BIOMETRIC TURNSTILE TERMINAL (DEV-SITE-01)
+      const siteGroup = new THREE.Group();
+      siteGroup.position.set(-50, 5, 20);
+      siteGroup.userData = { id: "site", name: "SITE Plant" };
+      scene.add(siteGroup);
+      plantMeshes.push(siteGroup);
+
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.85, roughness: 0.25 });
+      const darkSteel = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.3 });
+      const cyanGlass = new THREE.MeshPhysicalMaterial({ color: 0x00f5ff, transmission: 0.75, transparent: true, opacity: 0.75 });
+
+      const lCab = new THREE.Mesh(new THREE.BoxGeometry(2.4, 8.0, 7.0), steelMat);
+      lCab.position.set(-4.5, 0, 0);
+      siteGroup.add(lCab);
+      const rCab = new THREE.Mesh(new THREE.BoxGeometry(2.4, 8.0, 7.0), steelMat);
+      rCab.position.set(4.5, 0, 0);
+      siteGroup.add(rCab);
+
+      // Flaps
+      const flapL = new THREE.Group();
+      flapL.position.set(-3.3, 1.2, 0);
+      const fmL = new THREE.Mesh(new THREE.BoxGeometry(3.0, 4.4, 0.2), cyanGlass);
+      fmL.position.set(1.5, 0, 0);
+      flapL.add(fmL);
+      siteGroup.add(flapL);
+      cfoFlaps.push({ pivot: flapL, dir: -1 });
+
+      const flapR = new THREE.Group();
+      flapR.position.set(3.3, 1.2, 0);
+      const fmR = new THREE.Mesh(new THREE.BoxGeometry(3.0, 4.4, 0.2), cyanGlass);
+      fmR.position.set(-1.5, 0, 0);
+      flapR.add(fmR);
+      siteGroup.add(flapR);
+      cfoFlaps.push({ pivot: flapR, dir: 1 });
+
+      // Billboard for clock drift
+      const ledCvs = document.createElement('canvas');
+      ledCvs.width = 512; ledCvs.height = 140;
+      const ledCtx = ledCvs.getContext('2d');
+      ledCtx.fillStyle = '#020617'; ledCtx.fillRect(0, 0, 512, 140);
+      ledCtx.strokeStyle = '#fbbf24'; ledCtx.lineWidth = 4; ledCtx.strokeRect(4, 4, 504, 132);
+      ledCtx.fillStyle = '#fbbf24'; ledCtx.font = 'bold 24px monospace';
+      ledCtx.fillText('TERMINAL DEV-SITE-01 [SITE PLANT]', 20, 42);
+      ledCtx.font = 'bold 30px monospace';
+      ledCtx.fillText('08:00 AM → 09:00 AM (+60m DRIFT)', 20, 85);
+      ledCtx.fillStyle = '#ff2a5f'; ledCtx.font = '18px monospace';
+      ledCtx.fillText('⚠️ UNCALIBRATED HARDWARE JUMP', 20, 118);
+      const ledTex = new THREE.CanvasTexture(ledCvs);
+      const ledBanner = new THREE.Mesh(new THREE.PlaneGeometry(9.0, 2.6), new THREE.MeshBasicMaterial({ map: ledTex, side: THREE.DoubleSide }));
+      ledBanner.position.set(0, 8.4, 0);
+      siteGroup.add(ledBanner);
+
+      const siteBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 120, 16), new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.7 }));
+      siteBeam.position.set(0, 60, 0);
+      siteGroup.add(siteBeam);
+
+
+      // 2. FAISALABAD PLANT: 3D INDUSTRIAL TEXTILE WEAVING LOOM (D20 STITCHING/WEAVING)
+      const fsdGroup = new THREE.Group();
+      fsdGroup.position.set(55, 10, -15);
+      fsdGroup.userData = { id: "faisalabad", name: "Faisalabad Plant" };
+      scene.add(fsdGroup);
+      plantMeshes.push(fsdGroup);
+
+      const loomChassis = new THREE.Mesh(new THREE.BoxGeometry(15, 1.4, 9), darkSteel);
+      loomChassis.position.y = -3.2;
+      fsdGroup.add(loomChassis);
+
+      const loomUpL = new THREE.Mesh(new THREE.BoxGeometry(1.4, 8.5, 8.0), steelMat);
+      loomUpL.position.set(-7.0, 1.0, 0);
+      fsdGroup.add(loomUpL);
+      const loomUpR = new THREE.Mesh(new THREE.BoxGeometry(1.4, 8.5, 8.0), steelMat);
+      loomUpR.position.set(7.0, 1.0, 0);
+      fsdGroup.add(loomUpR);
+
+      // Moving Shuttle
+      cfoShuttle = new THREE.Mesh(
+        new THREE.BoxGeometry(2.6, 0.6, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0xff2a5f, emissive: 0xbe123c, emissiveIntensity: 0.6 })
+      );
+      cfoShuttle.position.set(0, 0.3, 0.6);
+      fsdGroup.add(cfoShuttle);
+
+      // Harnesses
+      cfoHarnessA = new THREE.Mesh(new THREE.BoxGeometry(12, 4.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xff2a5f, wireframe: true }));
+      cfoHarnessA.position.set(0, 2.0, -0.9);
+      fsdGroup.add(cfoHarnessA);
+
+      cfoHarnessB = new THREE.Mesh(new THREE.BoxGeometry(12, 4.2, 0.2), new THREE.MeshBasicMaterial({ color: 0x00f5ff, wireframe: true }));
+      cfoHarnessB.position.set(0, 0.9, -0.2);
+      fsdGroup.add(cfoHarnessB);
+
+      // Rotating Fabric Roller
+      const clothRoll = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 12.5, 32), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8 }));
+      clothRoll.position.set(0, -1.2, 3.4);
+      clothRoll.rotation.z = Math.PI / 2;
+      fsdGroup.add(clothRoll);
+
+      const fsdBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 120, 16), new THREE.MeshBasicMaterial({ color: 0xff2a5f, transparent: true, opacity: 0.75 }));
+      fsdBeam.position.set(0, 60, 0);
+      fsdGroup.add(fsdBeam);
+
+
+      // 3. KORANGI PLANT: 3D HIGH-SPEED SPINNING SPINDLES
+      const krgGroup = new THREE.Group();
+      krgGroup.position.set(-20, 15, -40);
+      krgGroup.userData = { id: "korangi", name: "Korangi Plant" };
+      scene.add(krgGroup);
+      plantMeshes.push(krgGroup);
+
+      const krgChassis = new THREE.Mesh(new THREE.BoxGeometry(12, 1.2, 6), darkSteel);
+      krgChassis.position.y = -2.8;
+      krgGroup.add(krgChassis);
+
+      const spoolColors = [0x00f5ff, 0x10b981, 0x38bdf8, 0xa855f7];
+      for (let i = 0; i < 4; i++) {
+        const xP = -4.2 + i * 2.8;
+        const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 4.6, 16), steelMat);
+        pin.position.set(xP, 0.2, 0);
+        krgGroup.add(pin);
+
+        const spool = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.9, 0.9, 2.8, 24),
+          new THREE.MeshStandardMaterial({ color: spoolColors[i], roughness: 0.6 })
+        );
+        spool.position.set(xP, 0.2, 0);
+        krgGroup.add(spool);
+        cfoSpools.push(spool);
+      }
+
+      const krgBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 120, 16), new THREE.MeshBasicMaterial({ color: 0x00f5ff, transparent: true, opacity: 0.5 }));
+      krgBeam.position.set(0, 60, 0);
+      krgGroup.add(krgBeam);
+
+
+      // 4. HEAD OFFICE: 3D KIMBALL STAR SCHEMA & DQ GATEWAY HUB
+      const hoGroup = new THREE.Group();
+      hoGroup.position.set(12, -15, 40);
+      hoGroup.userData = { id: "ho", name: "Head Office" };
+      scene.add(hoGroup);
+      plantMeshes.push(hoGroup);
+
+      // Central Fact Attendance Cube
+      const hoFact = new THREE.Mesh(
+        new THREE.BoxGeometry(5.2, 5.2, 5.2),
+        new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 0.45, metalness: 0.5 })
+      );
+      hoGroup.add(hoFact);
+      cfoKimballCubes.push(hoFact);
+
+      const hoWire = new THREE.Mesh(new THREE.BoxGeometry(5.4, 5.4, 5.4), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.4 }));
+      hoFact.add(hoWire);
+
+      // Satellites
+      const hoOffsets = [[-6, 4.2, 0], [6, 4.2, 0], [-6, -4.2, 0], [6, -4.2, 0]];
+      hoOffsets.forEach((pos) => {
+        const dMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(2.2, 2.2, 2.2),
+          new THREE.MeshStandardMaterial({ color: 0x00f5ff, emissive: 0x0284c7, emissiveIntensity: 0.35 })
+        );
+        dMesh.position.set(pos[0], pos[1], pos[2]);
+        hoGroup.add(dMesh);
+        cfoKimballCubes.push(dMesh);
+      });
+
+      const hoTorus = new THREE.Mesh(
+        new THREE.TorusGeometry(9.5, 0.25, 16, 80),
+        new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.55 })
+      );
+      hoTorus.rotation.x = Math.PI / 3;
+      hoGroup.add(hoTorus);
+
+      const hoBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 120, 16), new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.5 }));
+      hoBeam.position.set(0, 60, 0);
+      hoGroup.add(hoBeam);
+
+
+      // 5. CONNECTING DATA PIPELINE CONDUITS (Streaming Punch Records)
+      const plantConduits = [
+        { from: [55, 10, -15], to: [12, -15, 40], color: 0xff2a5f },
+        { from: [-50, 5, 20], to: [12, -15, 40], color: 0xfbbf24 },
+        { from: [-20, 15, -40], to: [12, -15, 40], color: 0x00f5ff }
+      ];
+
+      plantConduits.forEach(c => {
+        const p1 = new THREE.Vector3(c.from[0], c.from[1], c.from[2]);
+        const p2 = new THREE.Vector3(c.to[0], c.to[1], c.to[2]);
+        const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+        mid.y += 18;
+
+        const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
+        const curvePoints = curve.getPoints(50);
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+        const lineMat = new THREE.LineBasicMaterial({ color: c.color, transparent: true, opacity: 0.45 });
+        const spline = new THREE.Line(lineGeo, lineMat);
+        scene.add(spline);
+
+        const pktGeo = new THREE.SphereGeometry(1.2, 16, 16);
+        const pktMat = new THREE.MeshBasicMaterial({ color: c.color });
+        const pkt = new THREE.Mesh(pktGeo, pktMat);
+        scene.add(pkt);
+        dataPackets.push({ mesh: pkt, curve: curve, progress: Math.random() });
+      });
+
+      // Mouse Drag Controls
+      window.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        mousePos = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('mouseup', () => { isMouseDown = false; });
+      window.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        const dx = e.clientX - mousePos.x;
+        const dy = e.clientY - mousePos.y;
+        scene.rotation.y += dx * 0.003;
+        scene.rotation.x += dy * 0.002;
+        mousePos = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('resize', onResize);
+      renderLoop();
+    }
+
+    let cfoClock = new THREE.Clock();
+
+    function renderLoop() {
+      requestAnimationFrame(renderLoop);
+      const t = cfoClock.getElapsedTime();
+
+      // 1. Turnstile Optical Flap Motion
+      cfoFlaps.forEach(f => {
+        f.pivot.rotation.y = Math.sin(t * 1.8) * 1.1 * f.dir;
+      });
+
+      // 2. Weaving Loom Shuttle & Harness Motion
+      if (cfoShuttle) cfoShuttle.position.x = Math.sin(t * 7.5) * 5.2;
+      if (cfoHarnessA) cfoHarnessA.position.y = 1.4 + Math.sin(t * 7.5) * 0.8;
+      if (cfoHarnessB) cfoHarnessB.position.y = 1.4 - Math.sin(t * 7.5) * 0.8;
+
+      // 3. Spinning Bobbins high RPM
+      cfoSpools.forEach(s => { s.rotation.y += 0.14; });
+
+      // 4. Kimball DW Hub Cubes
+      cfoKimballCubes.forEach((c, idx) => {
+        c.rotation.y += 0.015 * (idx % 2 === 0 ? 1 : -1);
+        c.rotation.x = Math.sin(t + idx) * 0.1;
+      });
+
+      // 5. Data Packets along conduits
+      dataPackets.forEach(p => {
+        p.progress += 0.008;
+        if (p.progress > 1) p.progress = 0;
+        const pt = p.curve.getPoint(p.progress);
+        p.mesh.position.copy(pt);
+      });
+
+      if (!isMouseDown) {
+        scene.rotation.y += 0.0006;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // Move 3D camera smoothly with GSAP
+    function moveCamera(presetKey) {
+      playTone(600, 'triangle', 0.12, 0.06);
+      document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById('cam-' + presetKey);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const target = CAM_POSITIONS[presetKey];
+      if (!target || typeof gsap === 'undefined') return;
+
+      gsap.to(camera.position, {
+        x: target.x,
+        y: target.y,
+        z: target.z,
+        duration: 1.8,
+        ease: "power3.inOut",
+        onUpdate: () => {
+          camera.lookAt(target.target.x, target.target.y, target.target.z);
+        }
+      });
+
+      if (presetKey === 'faisalabad') {
+        const inp = document.getElementById('otSearchInput');
+        if (inp) { inp.value = "Faisalabad"; filterCyberTable('otSearchInput', 'otTable'); showTab('tab-ot'); }
+      }
+    }
+
+    // ==========================================
+    // 3. 3D CARD TILT PHYSICS (Perspectives)
+    // ==========================================
+    function tiltPhysics(e, card) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rx = ((y - cy) / cy) * -12;
+      const ry = ((x - cx) / cx) * 12;
+
+      card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px) scale3d(1.02, 1.02, 1.02)`;
+    }
+    function resetPhysics(card) {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale3d(1, 1, 1)';
+    }
+
+    // ==========================================
+    // 4. GSAP TAB CHOREOGRAPHY & CYBER SCROLLER
+    // ==========================================
+    function updateScrollerThumb() {
+      const nav = document.getElementById('hudTabsNav');
+      const thumb = document.getElementById('tabsScrollThumb');
+      if (!nav || !thumb) return;
+      const maxScroll = nav.scrollWidth - nav.clientWidth;
+      if (maxScroll <= 0) {
+        thumb.style.width = '100%';
+        thumb.style.left = '0%';
+        return;
+      }
+      const ratio = nav.clientWidth / nav.scrollWidth;
+      const thumbWidthPct = Math.max(16, ratio * 100);
+      const scrollPct = nav.scrollLeft / maxScroll;
+      const thumbLeftPct = scrollPct * (100 - thumbWidthPct);
+      thumb.style.width = thumbWidthPct + '%';
+      thumb.style.left = thumbLeftPct + '%';
+    }
+
+    function scrollHudTabs(delta) {
+      playTone(480, 'triangle', 0.05, 0.03);
+      const nav = document.getElementById('hudTabsNav');
+      if (!nav) return;
+      const maxScroll = nav.scrollWidth - nav.clientWidth;
+      const targetScroll = Math.max(0, Math.min(maxScroll, nav.scrollLeft + delta));
+      if (typeof gsap !== 'undefined') {
+        gsap.to(nav, {
+          scrollLeft: targetScroll,
+          duration: 0.45,
+          ease: "power2.out",
+          onUpdate: updateScrollerThumb
+        });
+      } else {
+        nav.scrollLeft = targetScroll;
+        updateScrollerThumb();
+      }
+    }
+
+    function handleRailClick(e) {
+      const rail = document.getElementById('tabsScrollRail');
+      const nav = document.getElementById('hudTabsNav');
+      if (!rail || !nav) return;
+      playTone(560, 'sine', 0.06, 0.03);
+      const rect = rail.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = clickX / rect.width;
+      const maxScroll = nav.scrollWidth - nav.clientWidth;
+      const targetScroll = pct * maxScroll;
+      if (typeof gsap !== 'undefined') {
+        gsap.to(nav, {
+          scrollLeft: targetScroll,
+          duration: 0.45,
+          ease: "power2.out",
+          onUpdate: updateScrollerThumb
+        });
+      } else {
+        nav.scrollLeft = targetScroll;
+        updateScrollerThumb();
+      }
+    }
+
+    function showTab(tabId) {
+      playTone(520, 'sine', 0.08, 0.04);
+      const current = document.querySelector('.tab-panel.active');
+      const target = document.getElementById(tabId);
+      if (!target || current === target) return;
+
+      document.querySelectorAll('.hud-tab-btn').forEach(b => b.classList.remove('active'));
+      const btnMap = {
+        'tab-cfo': 'btn-cfo',
+        'tab-ot': 'btn-ot',
+        'tab-ghost': 'btn-ghost',
+        'tab-workforce': 'btn-workforce',
+        'tab-arch': 'btn-arch'
+      };
+      const activeBtn = document.getElementById(btnMap[tabId]);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        // Auto-center the active tab in view with GSAP
+        const nav = document.getElementById('hudTabsNav');
+        if (nav) {
+          const btnOffset = activeBtn.offsetLeft - (nav.clientWidth / 2) + (activeBtn.clientWidth / 2);
+          const maxScroll = nav.scrollWidth - nav.clientWidth;
+          const targetScroll = Math.max(0, Math.min(maxScroll, btnOffset));
+          if (typeof gsap !== 'undefined') {
+            gsap.to(nav, {
+              scrollLeft: targetScroll,
+              duration: 0.5,
+              ease: "power2.out",
+              onUpdate: updateScrollerThumb
+            });
+          } else {
+            nav.scrollLeft = targetScroll;
+            updateScrollerThumb();
+          }
+        }
+      }
+
+      if (typeof gsap !== 'undefined') {
+        gsap.to(current, {
+          opacity: 0,
+          y: -12,
+          duration: 0.2,
+          ease: "power2.in",
+          onComplete: () => {
+            current.classList.remove('active');
+            target.classList.add('active');
+            gsap.fromTo(target,
+              { opacity: 0, y: 16 },
+              { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }
+            );
+          }
+        });
+      } else {
+        current.classList.remove('active');
+        target.classList.add('active');
+      }
+    }
+
+    // Table Filter
+    function filterCyberTable(inputId, tableId) {
+      const q = document.getElementById(inputId).value.toLowerCase();
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let r of rows) {
+        r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+      }
+    }
+
+    // Modal with Elastic GSAP Pop
+    function openAuditModal(id, name, sepDate, months, loss, att, dept, monthly) {
+      playTone(700, 'square', 0.1, 0.04);
+      document.getElementById('modalEmpId').innerText = id;
+      document.getElementById('modalName').innerText = name;
+      document.getElementById('modalSepDate').innerText = sepDate;
+      document.getElementById('modalMonths').innerText = months;
+      document.getElementById('modalTotalLoss').innerText = loss;
+      document.getElementById('modalAttendance').innerText = att;
+      document.getElementById('modalDept').innerText = dept;
+      document.getElementById('modalMonthlyRate').innerText = monthly;
+
+      const modal = document.getElementById('auditModal');
+      const box = document.getElementById('modalBox');
+      modal.classList.add('open');
+
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(box,
+          { scale: 0.8, opacity: 0, rotateY: 15 },
+          { scale: 1, opacity: 1, rotateY: 0, duration: 0.35, ease: "back.out(1.7)" }
+        );
+      }
+    }
+    function closeAuditModal() {
+      playTone(350, 'sine', 0.08, 0.04);
+      const modal = document.getElementById('auditModal');
+      const box = document.getElementById('modalBox');
+      if (typeof gsap !== 'undefined') {
+        gsap.to(box, {
+          scale: 0.85,
+          opacity: 0,
+          duration: 0.2,
+          onComplete: () => modal.classList.remove('open')
+        });
+      } else {
+        modal.classList.remove('open');
+      }
+    }
+
+    // Page Load Init
+    window.addEventListener('load', () => {
+      initThreeScene();
+
+      // Entrance animation
+      if (typeof gsap !== 'undefined') {
+        gsap.from('.kpi-holo-card', {
+          y: 40,
+          opacity: 0,
+          duration: 0.9,
+          stagger: 0.12,
+          ease: "power3.out"
+        });
+      }
+
+      // Charts
+      if (typeof Chart !== 'undefined') {
+        new Chart(document.getElementById('otTrendChart'), {
+          type: 'bar',
+          data: {
+            labels: ['2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'],
+            datasets: [
+              { label: 'Biometric Worked (hrs)', data: [4891, 5051, 4867, 4964, 4670, 4673], backgroundColor: 'rgba(99, 102, 241, 0.8)', borderRadius: 6 },
+              { label: 'Paid Overtime (hrs)', data: [5747, 5885, 6006, 6366, 5977, 6421], backgroundColor: 'rgba(255, 42, 95, 0.85)', borderRadius: 6 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8' } } },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+              y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            }
+          }
+        });
+
+        new Chart(document.getElementById('plantOtChart'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Faisalabad Plant (4,523 hrs gap)', 'Korangi Plant (1,053 hrs gap)', 'SITE Plant (1,348 hrs gap)', 'Head Office (362 hrs gap)'],
+            datasets: [{
+              data: [4523, 1053, 1348, 362],
+              backgroundColor: ['#ff2a5f', '#fbbf24', '#a855f7', '#00f5ff'],
+              borderWidth: 2,
+              borderColor: '#0b1326'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } }
+          }
+        });
+
+        new Chart(document.getElementById('headcountChart'), {
+          type: 'line',
+          data: {
+            labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+            datasets: [{
+              label: 'Total Headcount',
+              data: [1199, 1192, 1183, 1178, 1182, 1176],
+              borderColor: '#00f5ff',
+              backgroundColor: 'rgba(0, 245, 255, 0.1)',
+              tension: 0.35,
+              fill: true,
+              pointBackgroundColor: '#ec4899',
+              pointRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8' } } },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+              y: { min: 1150, max: 1220, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            }
+          }
+        });
+      }
+
+      // Initialize GSAP Cyber Scroller & Laser Bar
+      updateScrollerThumb();
+
+      const tabsNav = document.getElementById('hudTabsNav');
+      if (tabsNav) {
+        tabsNav.addEventListener('scroll', updateScrollerThumb, { passive: true });
+        window.addEventListener('resize', updateScrollerThumb);
+
+        // Smooth Mouse Wheel -> Horizontal GSAP Scroll
+        tabsNav.addEventListener('wheel', (e) => {
+          if (e.deltaY !== 0) {
+            e.preventDefault();
+            scrollHudTabs(e.deltaY * 2.2);
+          }
+        }, { passive: false });
+
+        // Touch & Drag-to-Scroll physics
+        let isDown = false;
+        let startX = 0;
+        let scrollStart = 0;
+        tabsNav.addEventListener('mousedown', (e) => {
+          isDown = true;
+          startX = e.pageX - tabsNav.offsetLeft;
+          scrollStart = tabsNav.scrollLeft;
+        });
+        window.addEventListener('mouseup', () => { isDown = false; });
+        tabsNav.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - tabsNav.offsetLeft;
+          const walk = (x - startX) * 1.5;
+          tabsNav.scrollLeft = scrollStart - walk;
+          updateScrollerThumb();
+        });
+      }
+
+      // Laser Reading Scroll Progress Bar
+      window.addEventListener('scroll', () => {
+        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / (height || 1)) * 100;
+        const bar = document.getElementById('cyber-scroll-progress');
+        if (bar) bar.style.width = Math.min(100, Math.max(0, scrolled)) + '%';
+      }, { passive: true });
+
+
+    });
+  </script>
+</body>
+</html>
